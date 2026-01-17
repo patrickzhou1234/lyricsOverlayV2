@@ -2,7 +2,7 @@
 
 A beautiful, modern lyrics overlay for Spotify built with Electron.js and Python.
 
-![Lyrics Overlay Preview](preview.png)
+![Lyrics Overlay Preview](https://r2.e-z.host/0a585a51-c22e-4d3e-804a-efc077a2d38c/oq1ytdg4.png)
 
 ## ✨ Features
 
