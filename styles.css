@@ -168,11 +168,15 @@ body {
 
 .control-btn.drag-handle {
   cursor: move;
-  -webkit-app-region: drag;
 }
 
 .control-btn.drag-handle:hover {
   background: rgba(59, 130, 246, 0.3);
+}
+
+.control-btn.drag-handle.dragging {
+  background: rgba(59, 130, 246, 0.5);
+  cursor: grabbing;
 }
 
 /* ============================================

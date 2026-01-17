@@ -45,6 +45,11 @@ class LyricsOverlay {
     this.audioMotion = null;
     this.audioStream = null;
     this.currentLyricStyle = 'default';
+    
+    // Drag state
+    this.isDragging = false;
+    this.lastMouseX = 0;
+    this.lastMouseY = 0;
 
     this.init();
   }
@@ -95,6 +100,9 @@ class LyricsOverlay {
 
     // Click-through handling - enable mouse when hovering interactive areas
     this.setupClickThrough();
+    
+    // Setup drag handle for window movement
+    this.setupDragHandle();
 
     // Listen for lyrics updates from Python backend
     window.electronAPI.onLyricsUpdate((data) => {
@@ -118,7 +126,8 @@ class LyricsOverlay {
     // Interactive elements that should enable mouse events
     const interactiveElements = [
       this.elements.titleBar,
-      this.elements.settingsPanel
+      this.elements.settingsPanel,
+      this.elements.dragBtn
     ];
 
     interactiveElements.forEach(el => {
@@ -127,11 +136,52 @@ class LyricsOverlay {
           window.electronAPI.setIgnoreMouse(false);
         });
         el.addEventListener('mouseleave', () => {
-          // Only re-enable click-through if settings panel is closed
-          if (!this.elements.settingsPanel.classList.contains('open')) {
+          // Only re-enable click-through if settings panel is closed and not dragging
+          if (!this.elements.settingsPanel.classList.contains('open') && !this.isDragging) {
             window.electronAPI.setIgnoreMouse(true);
           }
         });
+      }
+    });
+  }
+
+  setupDragHandle() {
+    const dragBtn = this.elements.dragBtn;
+    if (!dragBtn) return;
+
+    dragBtn.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      this.isDragging = true;
+      this.lastMouseX = e.screenX;
+      this.lastMouseY = e.screenY;
+      window.electronAPI.startDrag();
+      dragBtn.classList.add('dragging');
+    });
+
+    // Use document-level events to capture mouse even when moving fast
+    document.addEventListener('mousemove', (e) => {
+      if (!this.isDragging) return;
+      
+      const deltaX = e.screenX - this.lastMouseX;
+      const deltaY = e.screenY - this.lastMouseY;
+      
+      if (deltaX !== 0 || deltaY !== 0) {
+        window.electronAPI.moveWindow(deltaX, deltaY);
+        this.lastMouseX = e.screenX;
+        this.lastMouseY = e.screenY;
+      }
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (this.isDragging) {
+        this.isDragging = false;
+        window.electronAPI.endDrag();
+        dragBtn.classList.remove('dragging');
+        
+        // Re-enable click-through if settings panel is closed
+        if (!this.elements.settingsPanel.classList.contains('open')) {
+          window.electronAPI.setIgnoreMouse(true);
+        }
       }
     });
   }

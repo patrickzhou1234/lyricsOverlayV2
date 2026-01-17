@@ -10,6 +10,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   minimizeWindow: () => ipcRenderer.send('window-minimize'),
   closeWindow: () => ipcRenderer.send('window-close'),
   
+  // Window dragging
+  startDrag: () => ipcRenderer.send('window-start-drag'),
+  moveWindow: (deltaX, deltaY) => ipcRenderer.send('window-move', deltaX, deltaY),
+  endDrag: () => ipcRenderer.send('window-end-drag'),
+  
   // Click-through toggle (false = clickable, true = click-through)
   setIgnoreMouse: (ignore) => ipcRenderer.send('set-ignore-mouse', ignore),
   

@@ -127,6 +127,27 @@ ipcMain.on('window-close', () => {
   if (mainWindow) mainWindow.close();
 });
 
+// Window dragging handlers
+let dragStartPos = null;
+
+ipcMain.on('window-start-drag', () => {
+  if (mainWindow) {
+    const [x, y] = mainWindow.getPosition();
+    dragStartPos = { x, y };
+  }
+});
+
+ipcMain.on('window-move', (event, deltaX, deltaY) => {
+  if (mainWindow && dragStartPos) {
+    const [currentX, currentY] = mainWindow.getPosition();
+    mainWindow.setPosition(currentX + deltaX, currentY + deltaY);
+  }
+});
+
+ipcMain.on('window-end-drag', () => {
+  dragStartPos = null;
+});
+
 // Toggle click-through for specific interactive areas
 ipcMain.on('set-ignore-mouse', (event, ignore) => {
   if (mainWindow) {
