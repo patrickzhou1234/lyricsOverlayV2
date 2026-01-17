@@ -3,13 +3,19 @@
  * Handles UI updates and communication with Python backend
  */
 
+// Dynamically import the audioMotion analyzer
+let AudioMotionAnalyzer = null;
+
 class LyricsOverlay {
   constructor() {
     this.elements = {
+      overlay: document.getElementById('overlay'),
       statusIndicator: document.getElementById('statusIndicator'),
       statusText: document.getElementById('statusText'),
       trackName: document.getElementById('trackName'),
       trackArtist: document.getElementById('trackArtist'),
+      albumArt: document.getElementById('albumArt'),
+      albumArtPlaceholder: document.getElementById('albumArtPlaceholder'),
       lyricsContainer: document.getElementById('lyricsContainer'),
       lyricsContent: document.getElementById('lyricsContent'),
       progressFill: document.getElementById('progressFill'),
@@ -17,7 +23,15 @@ class LyricsOverlay {
       currentTime: document.getElementById('currentTime'),
       totalTime: document.getElementById('totalTime'),
       minimizeBtn: document.getElementById('minimizeBtn'),
-      closeBtn: document.getElementById('closeBtn')
+      closeBtn: document.getElementById('closeBtn'),
+      settingsBtn: document.getElementById('settingsBtn'),
+      settingsPanel: document.getElementById('settingsPanel'),
+      settingsClose: document.getElementById('settingsClose'),
+      opacitySlider: document.getElementById('opacitySlider'),
+      opacityValue: document.getElementById('opacityValue'),
+      enableVizBtn: document.getElementById('enableVizBtn'),
+      visualizerContainer: document.getElementById('visualizerContainer'),
+      titleBar: document.getElementById('titleBar')
     };
 
     this.currentLineIndex = -1;
@@ -26,6 +40,8 @@ class LyricsOverlay {
     this.startTime = null;
     this.duration = 0;
     this.progressMs = 0;
+    this.audioMotion = null;
+    this.audioStream = null;
 
     this.init();
   }
@@ -40,13 +56,162 @@ class LyricsOverlay {
       window.electronAPI.closeWindow();
     });
 
+    // Settings panel
+    this.elements.settingsBtn.addEventListener('click', () => {
+      this.toggleSettings();
+    });
+
+    this.elements.settingsClose.addEventListener('click', () => {
+      this.closeSettings();
+    });
+
+    // Opacity slider
+    this.elements.opacitySlider.addEventListener('input', (e) => {
+      const value = e.target.value;
+      this.elements.opacityValue.textContent = `${value}%`;
+      document.documentElement.style.setProperty('--overlay-opacity', value / 100);
+      window.electronAPI.setOpacity(value / 100);
+    });
+
+    // Visualization button
+    this.elements.enableVizBtn.addEventListener('click', () => {
+      this.enableVisualization();
+    });
+
+    // Click-through handling - enable mouse when hovering interactive areas
+    this.setupClickThrough();
+
     // Listen for lyrics updates from Python backend
     window.electronAPI.onLyricsUpdate((data) => {
       this.handleUpdate(data);
     });
 
+    // Album art loading
+    this.elements.albumArt.addEventListener('load', () => {
+      this.elements.albumArt.classList.add('loaded');
+    });
+
+    this.elements.albumArt.addEventListener('error', () => {
+      this.elements.albumArt.classList.remove('loaded');
+    });
+
     // Start update loop for synced lyrics
     this.startUpdateLoop();
+  }
+
+  setupClickThrough() {
+    // Interactive elements that should enable mouse events
+    const interactiveElements = [
+      this.elements.titleBar,
+      this.elements.settingsPanel
+    ];
+
+    interactiveElements.forEach(el => {
+      if (el) {
+        el.addEventListener('mouseenter', () => {
+          window.electronAPI.setIgnoreMouse(false);
+        });
+        el.addEventListener('mouseleave', () => {
+          // Only re-enable click-through if settings panel is closed
+          if (!this.elements.settingsPanel.classList.contains('open')) {
+            window.electronAPI.setIgnoreMouse(true);
+          }
+        });
+      }
+    });
+  }
+
+  toggleSettings() {
+    const isOpen = this.elements.settingsPanel.classList.toggle('open');
+    if (isOpen) {
+      window.electronAPI.setIgnoreMouse(false);
+    } else {
+      window.electronAPI.setIgnoreMouse(true);
+    }
+  }
+
+  closeSettings() {
+    this.elements.settingsPanel.classList.remove('open');
+    window.electronAPI.setIgnoreMouse(true);
+  }
+
+  async enableVisualization() {
+    try {
+      // Request screen capture with audio
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: {
+          width: 1,
+          height: 1
+        },
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false
+        }
+      });
+
+      // Stop the video track (we only need audio)
+      stream.getVideoTracks().forEach(track => track.stop());
+
+      const audioTracks = stream.getAudioTracks();
+      if (audioTracks.length === 0) {
+        console.error('No audio track in stream');
+        return;
+      }
+
+      this.audioStream = stream;
+      
+      // Initialize audioMotion analyzer
+      await this.initializeVisualizer(stream);
+      
+      this.elements.enableVizBtn.textContent = 'Visualization Active';
+      this.elements.enableVizBtn.classList.add('active');
+      this.closeSettings();
+    } catch (err) {
+      console.error('Error enabling visualization:', err);
+    }
+  }
+
+  async initializeVisualizer(stream) {
+    // Dynamically import the analyzer
+    if (!AudioMotionAnalyzer) {
+      const module = await import('./audioMotion-analyzer.js');
+      AudioMotionAnalyzer = module.default;
+    }
+
+    const audioCtx = new AudioContext();
+    const source = audioCtx.createMediaStreamSource(stream);
+
+    this.audioMotion = new AudioMotionAnalyzer(this.elements.visualizerContainer, {
+      source: source,
+      audioCtx: audioCtx,
+      mode: 10,
+      gradient: 'purple',
+      lineWidth: 2,
+      fillAlpha: 0.5,
+      showPeaks: false,
+      showScaleX: false,
+      showScaleY: false,
+      overlay: true,
+      showBgColor: false,
+      connectSpeakers: false,
+      smoothing: 0.7,
+      reflexRatio: 0.3,
+      reflexAlpha: 0.2,
+      reflexBright: 1
+    });
+
+    // Register custom purple gradient for the overlay theme
+    this.audioMotion.registerGradient('purple', {
+      bgColor: 'transparent',
+      colorStops: [
+        'rgba(139, 92, 246, 0.8)',
+        'rgba(236, 72, 153, 0.6)',
+        'rgba(139, 92, 246, 0.4)'
+      ]
+    });
+
+    this.audioMotion.gradient = 'purple';
   }
 
   handleUpdate(data) {
@@ -92,6 +257,15 @@ class LyricsOverlay {
       this.elements.trackArtist.textContent = track.artist;
       this.duration = track.durationMs;
       this.elements.totalTime.textContent = this.formatTime(track.durationMs);
+      
+      // Update album art
+      if (track.albumArt) {
+        this.elements.albumArt.src = track.albumArt;
+      } else {
+        this.elements.albumArt.classList.remove('loaded');
+        this.elements.albumArt.src = '';
+      }
+      
       this.updateStatus('Now Playing', true);
     }
   }
@@ -252,6 +426,10 @@ class LyricsOverlay {
     this.elements.progressGlow.style.width = '0%';
     this.elements.currentTime.textContent = '0:00';
     this.elements.totalTime.textContent = '0:00';
+    
+    // Clear album art
+    this.elements.albumArt.classList.remove('loaded');
+    this.elements.albumArt.src = '';
     
     this.elements.lyricsContent.innerHTML = `
       <div class="lyric-line placeholder">

@@ -8,6 +8,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+  <!-- Audio visualization canvas (behind everything) -->
+  <div id="visualizerContainer" class="visualizer-container"></div>
+
   <div class="overlay-container" id="overlay">
     <!-- Draggable title bar -->
     <div class="title-bar" id="titleBar">
@@ -16,6 +19,12 @@
         <span class="title-text" id="statusText">Connecting to Spotify...</span>
       </div>
       <div class="window-controls">
+        <button class="control-btn settings" id="settingsBtn" title="Settings">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
         <button class="control-btn minimize" id="minimizeBtn" title="Minimize">
           <svg width="12" height="12" viewBox="0 0 12 12">
             <rect y="5" width="12" height="2" fill="currentColor"/>
@@ -29,10 +38,42 @@
       </div>
     </div>
 
-    <!-- Track info -->
+    <!-- Settings Panel (slide out) -->
+    <div class="settings-panel" id="settingsPanel">
+      <div class="settings-header">
+        <span>Settings</span>
+        <button class="settings-close" id="settingsClose">×</button>
+      </div>
+      <div class="settings-content">
+        <div class="setting-item">
+          <label for="opacitySlider">Overlay Opacity</label>
+          <div class="slider-container">
+            <input type="range" id="opacitySlider" min="20" max="100" value="92">
+            <span id="opacityValue">92%</span>
+          </div>
+        </div>
+        <div class="setting-item">
+          <label>Audio Visualization</label>
+          <button class="viz-btn" id="enableVizBtn">Enable Visualization</button>
+          <p class="setting-hint">Requires screen share permission for system audio</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Track info with album art -->
     <div class="track-info" id="trackInfo">
-      <div class="track-name" id="trackName">No track playing</div>
-      <div class="track-artist" id="trackArtist">Play something on Spotify</div>
+      <div class="album-art-container">
+        <img class="album-art" id="albumArt" src="" alt="Album Art">
+        <div class="album-art-placeholder" id="albumArtPlaceholder">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+          </svg>
+        </div>
+      </div>
+      <div class="track-details">
+        <div class="track-name" id="trackName">No track playing</div>
+        <div class="track-artist" id="trackArtist">Play something on Spotify</div>
+      </div>
     </div>
 
     <!-- Lyrics container -->

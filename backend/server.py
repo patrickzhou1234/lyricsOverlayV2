@@ -94,6 +94,7 @@ class LyricsBackend:
                                 'name': track['name'],
                                 'artist': track['artist'],
                                 'album': track['album'],
+                                'albumArt': track.get('album_art'),
                                 'durationMs': track['duration_ms']
                             }
                         })

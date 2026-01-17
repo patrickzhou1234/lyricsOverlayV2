@@ -1,9 +1,10 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, desktopCapturer } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 
 let mainWindow;
 let pythonProcess = null;
+let currentOpacity = 0.92;
 
 function createWindow() {
   // Get screen dimensions
@@ -14,14 +15,15 @@ function createWindow() {
   // Create the overlay window
   mainWindow = new BrowserWindow({
     width: 900,
-    height: 280,
+    height: 320,
     x: Math.floor((screenWidth - 900) / 2),
-    y: screenHeight - 320,
+    y: screenHeight - 360,
     frame: false,
     transparent: true,
     alwaysOnTop: true,
     resizable: true,
     skipTaskbar: false,
+    hasShadow: false,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -31,8 +33,9 @@ function createWindow() {
 
   mainWindow.loadFile('index.html');
   
-  // Allow window to be clicked through when not focused
-  mainWindow.setIgnoreMouseEvents(false);
+  // Enable click-through by default with mouse event forwarding
+  // This allows the renderer to detect mouse position and enable interaction for specific areas
+  mainWindow.setIgnoreMouseEvents(true, { forward: true });
   
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -117,8 +120,34 @@ ipcMain.on('window-close', () => {
   if (mainWindow) mainWindow.close();
 });
 
+// Toggle click-through for specific interactive areas
 ipcMain.on('set-ignore-mouse', (event, ignore) => {
   if (mainWindow) {
     mainWindow.setIgnoreMouseEvents(ignore, { forward: true });
+  }
+});
+
+// Set overlay opacity
+ipcMain.on('set-opacity', (event, opacity) => {
+  currentOpacity = opacity;
+  if (mainWindow) {
+    mainWindow.webContents.send('opacity-changed', opacity);
+  }
+});
+
+// Get desktop sources for audio capture
+ipcMain.handle('get-desktop-sources', async () => {
+  try {
+    const sources = await desktopCapturer.getSources({ 
+      types: ['screen'],
+      fetchWindowIcons: false 
+    });
+    return sources.map(source => ({
+      id: source.id,
+      name: source.name
+    }));
+  } catch (e) {
+    console.error('Error getting desktop sources:', e);
+    return [];
   }
 });

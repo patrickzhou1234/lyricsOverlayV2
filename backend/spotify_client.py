@@ -38,10 +38,15 @@ class SpotifyClient:
             current = self.sp.current_user_playing_track()
             if current and current.get('item'):
                 track = current['item']
+                # Get album art (prefer largest image)
+                album_images = track['album'].get('images', [])
+                album_art = album_images[0]['url'] if album_images else None
+                
                 return {
                     'name': track['name'],
                     'artist': ', '.join([artist['name'] for artist in track['artists']]),
                     'album': track['album']['name'],
+                    'album_art': album_art,
                     'duration_ms': track['duration_ms'],
                     'progress_ms': current.get('progress_ms', 0),
                     'is_playing': current.get('is_playing', False)

@@ -2,6 +2,10 @@
    LYRICS OVERLAY - PREMIUM DARK DESIGN
    ============================================ */
 
+:root {
+  --overlay-opacity: 0.92;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -17,6 +21,28 @@ body {
 }
 
 /* ============================================
+   VISUALIZER BACKGROUND
+   ============================================ */
+
+.visualizer-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.visualizer-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ============================================
    OVERLAY CONTAINER
    ============================================ */
 
@@ -28,9 +54,9 @@ body {
   bottom: 0;
   background: linear-gradient(
     135deg,
-    rgba(15, 15, 25, 0.95) 0%,
-    rgba(25, 20, 40, 0.92) 50%,
-    rgba(15, 15, 25, 0.95) 100%
+    rgba(15, 15, 25, var(--overlay-opacity)) 0%,
+    rgba(25, 20, 40, calc(var(--overlay-opacity) * 0.97)) 50%,
+    rgba(15, 15, 25, var(--overlay-opacity)) 100%
   );
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -43,6 +69,8 @@ body {
     0 25px 50px -12px rgba(0, 0, 0, 0.8),
     0 0 0 1px rgba(255, 255, 255, 0.05) inset,
     0 -20px 40px -20px rgba(139, 92, 246, 0.15) inset;
+  z-index: 1;
+  pointer-events: none;
 }
 
 /* ============================================
@@ -61,6 +89,7 @@ body {
   );
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   -webkit-app-region: drag;
+  pointer-events: auto;
 }
 
 .title-left {
@@ -120,6 +149,7 @@ body {
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  pointer-events: auto;
 }
 
 .control-btn:hover {
@@ -132,14 +162,213 @@ body {
   color: white;
 }
 
+.control-btn.settings:hover {
+  background: rgba(139, 92, 246, 0.3);
+}
+
+/* ============================================
+   SETTINGS PANEL
+   ============================================ */
+
+.settings-panel {
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  width: 280px;
+  background: rgba(20, 15, 35, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.settings-panel.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.settings-close {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  pointer-events: auto;
+}
+
+.settings-close:hover {
+  color: white;
+}
+
+.settings-content {
+  padding: 16px;
+}
+
+.setting-item {
+  margin-bottom: 18px;
+}
+
+.setting-item:last-child {
+  margin-bottom: 0;
+}
+
+.setting-item label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 8px;
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.slider-container input[type="range"] {
+  flex: 1;
+  height: 6px;
+  -webkit-appearance: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.slider-container input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.slider-container input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.slider-container span {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  min-width: 36px;
+  text-align: right;
+}
+
+.viz-btn {
+  width: 100%;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2));
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  pointer-events: auto;
+}
+
+.viz-btn:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.3));
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+.viz-btn.active {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  border-color: transparent;
+}
+
+.setting-hint {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+/* ============================================
+   ALBUM ART
+   ============================================ */
+
+.album-art-container {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.album-art {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(139, 92, 246, 0.2);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.album-art.loaded {
+  opacity: 1;
+}
+
+.album-art-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.3);
+  transition: opacity 0.3s ease;
+}
+
+.album-art.loaded + .album-art-placeholder {
+  opacity: 0;
+}
+
 /* ============================================
    TRACK INFO
    ============================================ */
 
 .track-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
   padding: 12px 20px;
-  text-align: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.track-details {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
 }
 
 .track-name {
@@ -167,6 +396,9 @@ body {
   font-size: 12px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.45);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ============================================
@@ -298,6 +530,7 @@ body {
 
 .progress-container {
   padding: 12px 20px 16px;
+  pointer-events: auto;
 }
 
 .progress-bar {
