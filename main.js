@@ -53,10 +53,27 @@ function createWindow() {
 }
 
 function startPythonBackend() {
-  const pythonPath = 'python';
-  const scriptPath = path.join(__dirname, 'backend', 'server.py');
+  const isPackaged = app.isPackaged;
+  let pythonPath;
+  let scriptPath;
+  let args;
+
+  if (isPackaged) {
+    // In production, we use the bundled executable
+    const executableName = process.platform === 'win32' ? 'lyrics-backend.exe' : 'lyrics-backend';
+    pythonPath = path.join(process.resourcesPath, executableName);
+    args = [];
+    console.log('Production: Using bundled backend at', pythonPath);
+  } else {
+    // In development, we use the python interpreter and the script
+    // On macOS/Linux, it's often 'python3', on Windows it's usually 'python'
+    pythonPath = process.platform === 'win32' ? 'python' : 'python3';
+    scriptPath = path.join(__dirname, 'backend', 'server.py');
+    args = [scriptPath];
+    console.log(`Development: Using ${pythonPath} script at`, scriptPath);
+  }
   
-  pythonProcess = spawn(pythonPath, [scriptPath], {
+  pythonProcess = spawn(pythonPath, args, {
     stdio: ['pipe', 'pipe', 'pipe']
   });
 
