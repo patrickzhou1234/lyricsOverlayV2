@@ -29,6 +29,12 @@
             <circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="19" r="1.5"/>
           </svg>
         </button>
+        <button class="control-btn credentials" id="credentialsBtn" title="Spotify Credentials">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </button>
         <button class="control-btn settings" id="settingsBtn" title="Settings">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"/>
@@ -87,6 +93,32 @@
           <label>Audio Visualization</label>
           <button class="viz-btn" id="enableVizBtn">Enable Visualization</button>
           <p class="setting-hint">Requires screen share permission for system audio</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Credentials Panel (slide out) -->
+    <div class="credentials-panel" id="credentialsPanel">
+      <div class="settings-header">
+        <span>Spotify Credentials</span>
+        <button class="settings-close" id="credentialsClose">×</button>
+      </div>
+      <div class="settings-content">
+        <div class="setting-item">
+          <label for="clientIdInput">Spotify Client ID</label>
+          <input type="text" id="clientIdInput" class="credential-input" placeholder="Enter your Client ID">
+        </div>
+        <div class="setting-item">
+          <label for="clientSecretInput">Spotify Client Secret</label>
+          <input type="password" id="clientSecretInput" class="credential-input" placeholder="Enter your Client Secret">
+        </div>
+        <div class="setting-item">
+          <label for="geniusTokenInput">Genius Token (Optional)</label>
+          <input type="text" id="geniusTokenInput" class="credential-input" placeholder="For better lyrics fetching">
+        </div>
+        <div class="setting-item">
+          <button class="save-credentials-btn" id="saveCredentialsBtn">Save & Connect</button>
+          <p class="setting-hint" id="credentialsStatus">Get credentials from developer.spotify.com</p>
         </div>
       </div>
     </div>

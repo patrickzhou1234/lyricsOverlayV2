@@ -1,6 +1,12 @@
 const { app, BrowserWindow, ipcMain, desktopCapturer, session } = require('electron');
 const path = require('path');
+const fs = require('fs');
 const { spawn } = require('child_process');
+
+// Path to .env file in the app directory
+const envPath = app.isPackaged 
+  ? path.join(path.dirname(process.execPath), '.env')
+  : path.join(__dirname, '.env');
 
 let mainWindow;
 let pythonProcess = null;
@@ -199,4 +205,68 @@ ipcMain.handle('get-desktop-sources', async () => {
     console.error('Error getting desktop sources:', e);
     return [];
   }
+});
+
+// Credentials management - read/write to .env file
+ipcMain.handle('save-credentials', async (event, credentials) => {
+  try {
+    // Build .env file content
+    let envContent = '';
+    if (credentials.SPOTIFY_CLIENT_ID) {
+      envContent += `SPOTIFY_CLIENT_ID=${credentials.SPOTIFY_CLIENT_ID}\n`;
+    }
+    if (credentials.SPOTIFY_CLIENT_SECRET) {
+      envContent += `SPOTIFY_CLIENT_SECRET=${credentials.SPOTIFY_CLIENT_SECRET}\n`;
+    }
+    if (credentials.GENIUS_ACCESS_TOKEN) {
+      envContent += `GENIUS_ACCESS_TOKEN=${credentials.GENIUS_ACCESS_TOKEN}\n`;
+    }
+    
+    fs.writeFileSync(envPath, envContent);
+    console.log('Saved credentials to:', envPath);
+    return { success: true };
+  } catch (e) {
+    console.error('Error saving credentials:', e);
+    return { success: false, error: e.message };
+  }
+});
+
+ipcMain.handle('load-credentials', async () => {
+  try {
+    if (fs.existsSync(envPath)) {
+      const data = fs.readFileSync(envPath, 'utf8');
+      const credentials = {};
+      
+      // Parse .env format (KEY=value)
+      data.split('\n').forEach(line => {
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith('#')) {
+          const [key, ...valueParts] = trimmed.split('=');
+          if (key && valueParts.length > 0) {
+            credentials[key.trim()] = valueParts.join('=').trim();
+          }
+        }
+      });
+      
+      console.log('Loaded credentials from:', envPath);
+      return credentials;
+    }
+    return null;
+  } catch (e) {
+    console.error('Error loading credentials:', e);
+    return null;
+  }
+});
+
+ipcMain.handle('get-credentials-path', async () => {
+  return envPath;
+});
+
+// Restart the Python backend (useful after credentials change)
+ipcMain.on('restart-backend', () => {
+  if (pythonProcess) {
+    pythonProcess.kill();
+    pythonProcess = null;
+  }
+  startPythonBackend();
 });

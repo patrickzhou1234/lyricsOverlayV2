@@ -828,3 +828,94 @@ body {
   0%, 50% { opacity: 1; }
   51%, 100% { opacity: 0; }
 }
+
+/* ============================================
+   CREDENTIALS PANEL
+   ============================================ */
+
+.credentials-panel {
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: rgba(20, 15, 35, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.credentials-panel.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.control-btn.credentials:hover {
+  background: rgba(34, 197, 94, 0.3);
+}
+
+.credential-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.credential-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.credential-input:focus {
+  outline: none;
+  border-color: rgba(139, 92, 246, 0.5);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+}
+
+.save-credentials-btn {
+  width: 100%;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.save-credentials-btn:hover {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.save-credentials-btn:active {
+  transform: translateY(0);
+}
+
+.save-credentials-btn.saving {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  cursor: wait;
+}
+
+.save-credentials-btn.success {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.save-credentials-btn.error {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}

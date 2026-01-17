@@ -33,7 +33,16 @@ class LyricsOverlay {
       enableVizBtn: document.getElementById('enableVizBtn'),
       visualizerContainer: document.getElementById('visualizerContainer'),
       titleBar: document.getElementById('titleBar'),
-      styleBtns: document.querySelectorAll('.style-btn')
+      styleBtns: document.querySelectorAll('.style-btn'),
+      // Credentials panel elements
+      credentialsBtn: document.getElementById('credentialsBtn'),
+      credentialsPanel: document.getElementById('credentialsPanel'),
+      credentialsClose: document.getElementById('credentialsClose'),
+      clientIdInput: document.getElementById('clientIdInput'),
+      clientSecretInput: document.getElementById('clientSecretInput'),
+      geniusTokenInput: document.getElementById('geniusTokenInput'),
+      saveCredentialsBtn: document.getElementById('saveCredentialsBtn'),
+      credentialsStatus: document.getElementById('credentialsStatus')
     };
 
     this.currentLineIndex = -1;
@@ -98,6 +107,21 @@ class LyricsOverlay {
       this.enableVisualization();
     });
 
+    // Credentials panel
+    this.elements.credentialsBtn.addEventListener('click', () => {
+      this.toggleCredentials();
+    });
+
+    this.elements.credentialsClose.addEventListener('click', () => {
+      this.closeCredentials();
+    });
+
+    this.elements.saveCredentialsBtn.addEventListener('click', () => {
+      this.saveCredentials();
+    });
+
+    // Load saved credentials on startup
+    this.loadCredentials();
     // Click-through handling - enable mouse when hovering interactive areas
     this.setupClickThrough();
     
@@ -132,6 +156,7 @@ class LyricsOverlay {
     const interactiveElements = [
       this.elements.titleBar,
       this.elements.settingsPanel,
+      this.elements.credentialsPanel,
       this.elements.dragBtn
     ];
 
@@ -141,8 +166,10 @@ class LyricsOverlay {
           window.electronAPI.setIgnoreMouse(false);
         });
         el.addEventListener('mouseleave', () => {
-          // Only re-enable click-through if settings panel is closed and not dragging
-          if (!this.elements.settingsPanel.classList.contains('open') && !this.isDragging) {
+          // Only re-enable click-through if panels are closed and not dragging
+          if (!this.elements.settingsPanel.classList.contains('open') && 
+              !this.elements.credentialsPanel.classList.contains('open') && 
+              !this.isDragging) {
             window.electronAPI.setIgnoreMouse(true);
           }
         });
@@ -203,6 +230,93 @@ class LyricsOverlay {
   closeSettings() {
     this.elements.settingsPanel.classList.remove('open');
     window.electronAPI.setIgnoreMouse(true);
+  }
+
+  toggleCredentials() {
+    // Close settings panel if open
+    this.elements.settingsPanel.classList.remove('open');
+    
+    const isOpen = this.elements.credentialsPanel.classList.toggle('open');
+    if (isOpen) {
+      window.electronAPI.setIgnoreMouse(false);
+    } else {
+      window.electronAPI.setIgnoreMouse(true);
+    }
+  }
+
+  closeCredentials() {
+    this.elements.credentialsPanel.classList.remove('open');
+    window.electronAPI.setIgnoreMouse(true);
+  }
+
+  async loadCredentials() {
+    try {
+      const credentials = await window.electronAPI.loadCredentials();
+      if (credentials) {
+        this.elements.clientIdInput.value = credentials.SPOTIFY_CLIENT_ID || '';
+        this.elements.clientSecretInput.value = credentials.SPOTIFY_CLIENT_SECRET || '';
+        this.elements.geniusTokenInput.value = credentials.GENIUS_ACCESS_TOKEN || '';
+        
+        if (credentials.SPOTIFY_CLIENT_ID) {
+          this.elements.credentialsStatus.textContent = 'Credentials loaded';
+        }
+      }
+    } catch (err) {
+      console.error('Error loading credentials:', err);
+    }
+  }
+
+  async saveCredentials() {
+    const btn = this.elements.saveCredentialsBtn;
+    const status = this.elements.credentialsStatus;
+    
+    const credentials = {
+      SPOTIFY_CLIENT_ID: this.elements.clientIdInput.value.trim(),
+      SPOTIFY_CLIENT_SECRET: this.elements.clientSecretInput.value.trim(),
+      GENIUS_ACCESS_TOKEN: this.elements.geniusTokenInput.value.trim()
+    };
+
+    if (!credentials.SPOTIFY_CLIENT_ID || !credentials.SPOTIFY_CLIENT_SECRET) {
+      status.textContent = 'Client ID and Secret are required';
+      status.style.color = '#f87171';
+      return;
+    }
+
+    btn.textContent = 'Saving...';
+    btn.classList.add('saving');
+
+    try {
+      const result = await window.electronAPI.saveCredentials(credentials);
+      
+      if (result.success) {
+        btn.textContent = 'Saved! Restarting...';
+        btn.classList.remove('saving');
+        btn.classList.add('success');
+        status.textContent = 'Credentials saved successfully';
+        status.style.color = '#4ade80';
+        
+        // Restart the backend to use new credentials
+        setTimeout(() => {
+          window.electronAPI.restartBackend();
+          this.closeCredentials();
+          btn.textContent = 'Save & Connect';
+          btn.classList.remove('success');
+        }, 1500);
+      } else {
+        throw new Error(result.error || 'Unknown error');
+      }
+    } catch (err) {
+      btn.textContent = 'Save Failed';
+      btn.classList.remove('saving');
+      btn.classList.add('error');
+      status.textContent = err.message;
+      status.style.color = '#f87171';
+      
+      setTimeout(() => {
+        btn.textContent = 'Save & Connect';
+        btn.classList.remove('error');
+      }, 2000);
+    }
   }
 
   setLyricStyle(style) {
