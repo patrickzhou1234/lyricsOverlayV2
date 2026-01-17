@@ -5,3 +5,5 @@ oldAadit
 backend/__pycache__
 dist
 build
+lyrics-backend.spec
+build-backend
