@@ -9,16 +9,34 @@ import json
 import threading
 from dotenv import load_dotenv
 
-# Load environment variables from backend directory
-backend_dir = os.path.dirname(os.path.abspath(__file__))
-env_path = os.path.join(backend_dir, '.env')
-if os.path.exists(env_path):
-    load_dotenv(env_path)
+# Determine if running as a bundled PyInstaller executable
+if getattr(sys, 'frozen', False):
+    # Running as bundled .exe - look for .env next to the executable
+    exe_dir = os.path.dirname(sys.executable)
+    backend_dir = exe_dir
+    possible_env_paths = [
+        os.path.join(exe_dir, '.env'),           # Same folder as .exe
+        os.path.join(exe_dir, '..', '.env'),     # One level up (for app bundles)
+    ]
 else:
-    # Try parent directory
-    parent_env = os.path.join(os.path.dirname(backend_dir), '.env')
-    if os.path.exists(parent_env):
-        load_dotenv(parent_env)
+    # Running in development - look in backend directory and parent
+    backend_dir = os.path.dirname(os.path.abspath(__file__))
+    possible_env_paths = [
+        os.path.join(backend_dir, '.env'),
+        os.path.join(os.path.dirname(backend_dir), '.env'),
+    ]
+
+# Load credentials from .env file
+env_loaded = False
+for env_path in possible_env_paths:
+    if os.path.exists(env_path):
+        load_dotenv(env_path)
+        env_loaded = True
+        print(f"Loaded credentials from: {env_path}", file=sys.stderr)
+        break
+
+if not env_loaded:
+    print(f"Warning: No .env file found. Please set up your Spotify credentials in the app.", file=sys.stderr)
 
 # Add backend directory to path for local imports
 sys.path.insert(0, backend_dir)
