@@ -192,32 +192,18 @@ class LyricsOverlay {
       source: source,
       audioCtx: audioCtx,
       mode: 10,
-      gradient: 'purple',
+      gradient: 'rainbow',
       lineWidth: 2,
-      fillAlpha: 0.5,
+      fillAlpha: 0.6,
       showPeaks: false,
       showScaleX: false,
       showScaleY: false,
       overlay: true,
       showBgColor: false,
       connectSpeakers: false,
-      smoothing: 0.7,
-      reflexRatio: 0.3,
-      reflexAlpha: 0.2,
-      reflexBright: 1
+      smoothing: 0.7
     });
 
-    // Register custom purple gradient for the overlay theme
-    this.audioMotion.registerGradient('purple', {
-      bgColor: 'transparent',
-      colorStops: [
-        'rgba(139, 92, 246, 0.8)',
-        'rgba(236, 72, 153, 0.6)',
-        'rgba(139, 92, 246, 0.4)'
-      ]
-    });
-
-    this.audioMotion.gradient = 'purple';
   }
 
   handleUpdate(data) {
