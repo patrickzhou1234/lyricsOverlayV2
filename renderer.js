@@ -120,6 +120,11 @@ class LyricsOverlay {
 
     // Start update loop for synced lyrics
     this.startUpdateLoop();
+    
+    // Auto-enable visualization on startup
+    setTimeout(() => {
+      this.enableVisualization();
+    }, 1000);
   }
 
   setupClickThrough() {

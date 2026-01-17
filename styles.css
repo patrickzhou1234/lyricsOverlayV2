@@ -226,7 +226,6 @@ body {
   cursor: pointer;
   padding: 0 4px;
   line-height: 1;
-  pointer-events: auto;
 }
 
 .settings-close:hover {
@@ -302,7 +301,6 @@ body {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  pointer-events: auto;
 }
 
 .viz-btn:hover {
@@ -650,7 +648,6 @@ body {
   transition: all 0.2s ease;
   color: rgba(255, 255, 255, 0.6);
   font-size: 10px;
-  pointer-events: auto;
 }
 
 .style-btn:hover {
