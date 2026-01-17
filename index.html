@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lyrics Overlay</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="overlay-container" id="overlay">
+    <!-- Draggable title bar -->
+    <div class="title-bar" id="titleBar">
+      <div class="title-left">
+        <div class="pulse-indicator" id="statusIndicator"></div>
+        <span class="title-text" id="statusText">Connecting to Spotify...</span>
+      </div>
+      <div class="window-controls">
+        <button class="control-btn minimize" id="minimizeBtn" title="Minimize">
+          <svg width="12" height="12" viewBox="0 0 12 12">
+            <rect y="5" width="12" height="2" fill="currentColor"/>
+          </svg>
+        </button>
+        <button class="control-btn close" id="closeBtn" title="Close">
+          <svg width="12" height="12" viewBox="0 0 12 12">
+            <path d="M1 1L11 11M1 11L11 1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Track info -->
+    <div class="track-info" id="trackInfo">
+      <div class="track-name" id="trackName">No track playing</div>
+      <div class="track-artist" id="trackArtist">Play something on Spotify</div>
+    </div>
+
+    <!-- Lyrics container -->
+    <div class="lyrics-wrapper">
+      <div class="lyrics-gradient-top"></div>
+      <div class="lyrics-container" id="lyricsContainer">
+        <div class="lyrics-content" id="lyricsContent">
+          <div class="lyric-line placeholder">
+            <span class="waiting-animation">♪</span> Waiting for lyrics <span class="waiting-animation">♪</span>
+          </div>
+        </div>
+      </div>
+      <div class="lyrics-gradient-bottom"></div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-glow" id="progressGlow"></div>
+      </div>
+      <div class="time-display">
+        <span id="currentTime">0:00</span>
+        <span id="totalTime">0:00</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

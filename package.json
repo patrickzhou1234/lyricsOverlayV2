@@ -1,0 +1,16 @@
+{
+  "name": "lyrics-overlay",
+  "version": "1.0.0",
+  "description": "A beautiful lyrics overlay for Spotify",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev"
+  },
+  "keywords": ["lyrics", "spotify", "overlay"],
+  "author": "Patrick",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0"
+  }
+}
