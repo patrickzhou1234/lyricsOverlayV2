@@ -220,10 +220,18 @@ class LyricsOverlay {
 
   async enableVisualization() {
     try {
+      const isMac = window.electronAPI.platform === 'darwin';
+      
+      if (isMac) {
+        // On macOS, show instructions before prompting
+        this.elements.enableVizBtn.textContent = 'Select Spotify Tab...';
+      }
+      
       console.log('Requesting display media for audio capture...');
       
-      // Request screen capture with audio - Electron's setDisplayMediaRequestHandler
-      // in main.js will automatically provide loopback audio
+      // Request screen capture with audio
+      // On Windows: Electron's handler provides loopback audio automatically
+      // On macOS: User will be prompted to select a browser tab (use Spotify Web Player)
       const stream = await navigator.mediaDevices.getDisplayMedia({
         video: true,
         audio: true
@@ -242,7 +250,11 @@ class LyricsOverlay {
       const audioTracks = stream.getAudioTracks();
       if (audioTracks.length === 0) {
         console.error('No audio track in stream - audio capture may not be supported');
-        this.elements.enableVizBtn.textContent = 'No Audio Available';
+        if (isMac) {
+          this.elements.enableVizBtn.textContent = 'No Audio - Select a Browser Tab';
+        } else {
+          this.elements.enableVizBtn.textContent = 'No Audio Available';
+        }
         return;
       }
 
@@ -257,7 +269,14 @@ class LyricsOverlay {
       this.closeSettings();
     } catch (err) {
       console.error('Error enabling visualization:', err);
-      this.elements.enableVizBtn.textContent = 'Failed - Try Again';
+      const isMac = window.electronAPI.platform === 'darwin';
+      if (isMac) {
+        // More helpful error message for macOS users
+        this.elements.enableVizBtn.textContent = 'Use Spotify Web Player';
+        this.elements.enableVizBtn.title = 'Open Spotify in your browser, then click here and select that tab';
+      } else {
+        this.elements.enableVizBtn.textContent = 'Failed - Try Again';
+      }
     }
   }
 

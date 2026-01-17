@@ -32,12 +32,16 @@ function createWindow() {
   });
 
   // Set up display media request handler for screen/audio capture
-  session.defaultSession.setDisplayMediaRequestHandler((request, callback) => {
-    desktopCapturer.getSources({ types: ['screen'] }).then((sources) => {
-      // Use the primary screen
-      callback({ video: sources[0], audio: 'loopback' });
+  // On Windows, we can use loopback audio to capture system audio automatically
+  // On macOS, we skip this so the user can pick a browser tab (for Spotify Web Player)
+  if (process.platform === 'win32') {
+    session.defaultSession.setDisplayMediaRequestHandler((request, callback) => {
+      desktopCapturer.getSources({ types: ['screen'] }).then((sources) => {
+        // Use the primary screen with loopback audio
+        callback({ video: sources[0], audio: 'loopback' });
+      });
     });
-  });
+  }
 
   mainWindow.loadFile('index.html');
   

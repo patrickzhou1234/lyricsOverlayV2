@@ -25,5 +25,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   
   // Desktop sources for audio capture
-  getDesktopSources: () => ipcRenderer.invoke('get-desktop-sources')
+  getDesktopSources: () => ipcRenderer.invoke('get-desktop-sources'),
+  
+  // Platform detection for platform-specific features
+  platform: process.platform
 });
