@@ -137,28 +137,33 @@ class LyricsOverlay {
 
   async enableVisualization() {
     try {
-      // Request screen capture with audio
+      console.log('Requesting display media for audio capture...');
+      
+      // Request screen capture with audio - Electron's setDisplayMediaRequestHandler
+      // in main.js will automatically provide loopback audio
       const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: {
-          width: 1,
-          height: 1
-        },
-        audio: {
-          echoCancellation: false,
-          noiseSuppression: false,
-          autoGainControl: false
-        }
+        video: true,
+        audio: true
       });
 
+      console.log('Got stream:', stream);
+      console.log('Audio tracks:', stream.getAudioTracks().length);
+      console.log('Video tracks:', stream.getVideoTracks().length);
+
       // Stop the video track (we only need audio)
-      stream.getVideoTracks().forEach(track => track.stop());
+      stream.getVideoTracks().forEach(track => {
+        console.log('Stopping video track:', track.label);
+        track.stop();
+      });
 
       const audioTracks = stream.getAudioTracks();
       if (audioTracks.length === 0) {
-        console.error('No audio track in stream');
+        console.error('No audio track in stream - audio capture may not be supported');
+        this.elements.enableVizBtn.textContent = 'No Audio Available';
         return;
       }
 
+      console.log('Audio track:', audioTracks[0].label);
       this.audioStream = stream;
       
       // Initialize audioMotion analyzer
@@ -169,6 +174,7 @@ class LyricsOverlay {
       this.closeSettings();
     } catch (err) {
       console.error('Error enabling visualization:', err);
+      this.elements.enableVizBtn.textContent = 'Failed - Try Again';
     }
   }
 

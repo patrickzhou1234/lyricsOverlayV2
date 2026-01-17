@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, desktopCapturer } = require('electron');
+const { app, BrowserWindow, ipcMain, desktopCapturer, session } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 
@@ -31,10 +31,17 @@ function createWindow() {
     }
   });
 
+  // Set up display media request handler for screen/audio capture
+  session.defaultSession.setDisplayMediaRequestHandler((request, callback) => {
+    desktopCapturer.getSources({ types: ['screen'] }).then((sources) => {
+      // Use the primary screen
+      callback({ video: sources[0], audio: 'loopback' });
+    });
+  });
+
   mainWindow.loadFile('index.html');
   
   // Enable click-through by default with mouse event forwarding
-  // This allows the renderer to detect mouse position and enable interaction for specific areas
   mainWindow.setIgnoreMouseEvents(true, { forward: true });
   
   mainWindow.on('closed', () => {
