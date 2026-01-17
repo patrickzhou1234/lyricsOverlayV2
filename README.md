@@ -13,6 +13,15 @@ A beautiful, modern lyrics overlay for Spotify built with Electron.js and Python
 - **Draggable & resizable** - Position it anywhere on your screen
 - **Spotify integration** - Automatically detects what you're playing
 
+## 🪟 Windows Setup (Easiest Method)
+
+1. **Download the app** - Get the latest `.exe` from the [Releases](https://github.com/patrickzhou1234/lyricsOverlayV2/releases) page.
+2. **Install** - Run the installer and finish the setup.
+3. **Get your tokens** - Follow the [Getting Spotify Credentials](#getting-spotify-credentials) instructions below to get your Spotify and Genius tokens.
+4. **Configure the app** - Run the app, click the **lock icon** (settings), input your tokens, and click **Save**.
+
+It should then work as intended!
+
 ## 🚀 Getting Started
 
 ### Prerequisites
