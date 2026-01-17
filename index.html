@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lyrics Overlay</title>
   <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Google Fonts for lyric themes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@700&family=Playfair+Display:ital,wght@0,400;1,400&family=Courier+Prime&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="lyric-style-default">
   <!-- Audio visualization canvas (behind everything) -->
   <div id="visualizerContainer" class="visualizer-container"></div>
 
@@ -19,6 +22,13 @@
         <span class="title-text" id="statusText">Connecting to Spotify...</span>
       </div>
       <div class="window-controls">
+        <button class="control-btn drag-handle" id="dragBtn" title="Drag to move">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="9" cy="5" r="1.5"/><circle cx="15" cy="5" r="1.5"/>
+            <circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/>
+            <circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="19" r="1.5"/>
+          </svg>
+        </button>
         <button class="control-btn settings" id="settingsBtn" title="Settings">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"/>
@@ -50,6 +60,27 @@
           <div class="slider-container">
             <input type="range" id="opacitySlider" min="20" max="100" value="92">
             <span id="opacityValue">92%</span>
+          </div>
+        </div>
+        <div class="setting-item">
+          <label>Lyric Style</label>
+          <div class="style-options">
+            <button class="style-btn active" data-style="default">
+              <span class="style-preview default-preview">Aa</span>
+              <span>Default</span>
+            </button>
+            <button class="style-btn" data-style="cyberpunk">
+              <span class="style-preview cyberpunk-preview">Aa</span>
+              <span>Cyberpunk</span>
+            </button>
+            <button class="style-btn" data-style="ethereal">
+              <span class="style-preview ethereal-preview">Aa</span>
+              <span>Ethereal</span>
+            </button>
+            <button class="style-btn" data-style="retro">
+              <span class="style-preview retro-preview">Aa</span>
+              <span>Retro</span>
+            </button>
           </div>
         </div>
         <div class="setting-item">

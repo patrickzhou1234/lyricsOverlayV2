@@ -166,6 +166,15 @@ body {
   background: rgba(139, 92, 246, 0.3);
 }
 
+.control-btn.drag-handle {
+  cursor: move;
+  -webkit-app-region: drag;
+}
+
+.control-btn.drag-handle:hover {
+  background: rgba(59, 130, 246, 0.3);
+}
+
 /* ============================================
    SETTINGS PANEL
    ============================================ */
@@ -174,7 +183,9 @@ body {
   position: absolute;
   top: 50px;
   right: 10px;
-  width: 280px;
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
   background: rgba(20, 15, 35, 0.98);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
@@ -610,4 +621,209 @@ body {
 .no-lyrics-text {
   font-size: 14px;
   font-weight: 500;
+}
+
+/* ============================================
+   LYRIC STYLE OPTIONS
+   ============================================ */
+
+.style-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.style-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 8px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 10px;
+  pointer-events: auto;
+}
+
+.style-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.style-btn.active {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.5);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.style-preview {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.default-preview {
+  font-family: 'Inter', sans-serif;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.cyberpunk-preview {
+  font-family: 'Orbitron', sans-serif;
+  color: #ff00ff;
+  text-shadow: 0 0 8px #ff00ff;
+  background: rgba(255, 0, 255, 0.15);
+}
+
+.ethereal-preview {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.retro-preview {
+  font-family: 'Courier Prime', monospace;
+  color: #00ff00;
+  text-shadow: 0 0 8px #00ff00;
+  background: rgba(0, 40, 0, 0.4);
+}
+
+/* ============================================
+   LYRIC STYLE: DEFAULT
+   ============================================ */
+
+.lyric-style-default .lyric-line {
+  /* Uses base Inter font styles defined in .lyric-line */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ============================================
+   LYRIC STYLE: CYBERPUNK
+   ============================================ */
+
+.lyric-style-cyberpunk .lyric-line {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #ff00ff;
+  text-shadow:
+    0 0 5px #ff00ff,
+    0 0 10px #ff00ff,
+    0 0 20px #ff00ff,
+    0 0 40px #9d00ff;
+}
+
+.lyric-style-cyberpunk .lyric-line.active {
+  color: #00ffff;
+  font-size: 20px;
+  text-shadow:
+    0 0 5px #00ffff,
+    0 0 10px #00ffff,
+    0 0 20px #00ffff,
+    0 0 40px #00ffff,
+    0 0 60px #ff00ff;
+  animation: cyberpunk-flicker 0.15s infinite alternate;
+}
+
+@keyframes cyberpunk-flicker {
+  0% { opacity: 1; }
+  50% { opacity: 0.95; }
+  100% { opacity: 1; }
+}
+
+/* ============================================
+   LYRIC STYLE: ETHEREAL
+   ============================================ */
+
+.lyric-style-ethereal .lyric-line {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-style: italic;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.7);
+  filter: blur(0.5px);
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 0.3),
+    0 0 30px rgba(255, 255, 255, 0.2);
+}
+
+.lyric-style-ethereal .lyric-line.active {
+  filter: blur(0);
+  color: #ffffff;
+  font-size: 22px;
+  text-shadow:
+    0 0 15px rgba(255, 255, 255, 0.8),
+    0 0 40px rgba(255, 255, 255, 0.5),
+    0 0 60px rgba(255, 255, 255, 0.3);
+  animation: ethereal-glow 2s ease-in-out infinite;
+}
+
+@keyframes ethereal-glow {
+  0%, 100% {
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 50px rgba(255, 255, 255, 0.7);
+  }
+}
+
+/* ============================================
+   LYRIC STYLE: RETRO (Terminal)
+   ============================================ */
+
+.lyric-style-retro .lyric-line {
+  font-family: 'Courier Prime', 'Courier New', monospace;
+  font-size: 16px;
+  color: #00ff00;
+  text-shadow:
+    0 0 5px #00ff00,
+    0 0 10px rgba(0, 255, 0, 0.5);
+  background: rgba(0, 20, 0, 0.3);
+  padding: 4px 12px;
+  border-left: 2px solid #00ff00;
+  border-radius: 0;
+}
+
+.lyric-style-retro .lyric-line::before {
+  content: '> ';
+  opacity: 0.6;
+}
+
+.lyric-style-retro .lyric-line.active {
+  color: #00ff00;
+  font-size: 18px;
+  text-shadow:
+    0 0 10px #00ff00,
+    0 0 20px #00ff00,
+    0 0 30px rgba(0, 255, 0, 0.8);
+  animation: terminal-blink 0.8s infinite;
+}
+
+.lyric-style-retro .lyric-line.active::after {
+  content: '█';
+  animation: cursor-blink 0.5s infinite;
+  margin-left: 2px;
+}
+
+@keyframes terminal-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.9; }
+}
+
+@keyframes cursor-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
 }

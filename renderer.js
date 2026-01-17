@@ -24,6 +24,7 @@ class LyricsOverlay {
       totalTime: document.getElementById('totalTime'),
       minimizeBtn: document.getElementById('minimizeBtn'),
       closeBtn: document.getElementById('closeBtn'),
+      dragBtn: document.getElementById('dragBtn'),
       settingsBtn: document.getElementById('settingsBtn'),
       settingsPanel: document.getElementById('settingsPanel'),
       settingsClose: document.getElementById('settingsClose'),
@@ -31,7 +32,8 @@ class LyricsOverlay {
       opacityValue: document.getElementById('opacityValue'),
       enableVizBtn: document.getElementById('enableVizBtn'),
       visualizerContainer: document.getElementById('visualizerContainer'),
-      titleBar: document.getElementById('titleBar')
+      titleBar: document.getElementById('titleBar'),
+      styleBtns: document.querySelectorAll('.style-btn')
     };
 
     this.currentLineIndex = -1;
@@ -42,6 +44,7 @@ class LyricsOverlay {
     this.progressMs = 0;
     this.audioMotion = null;
     this.audioStream = null;
+    this.currentLyricStyle = 'default';
 
     this.init();
   }
@@ -71,6 +74,18 @@ class LyricsOverlay {
       this.elements.opacityValue.textContent = `${value}%`;
       document.documentElement.style.setProperty('--overlay-opacity', value / 100);
       window.electronAPI.setOpacity(value / 100);
+    });
+
+    // Lyric style buttons
+    this.elements.styleBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const style = btn.dataset.style;
+        this.setLyricStyle(style);
+        
+        // Update active state
+        this.elements.styleBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
     });
 
     // Visualization button
@@ -133,6 +148,19 @@ class LyricsOverlay {
   closeSettings() {
     this.elements.settingsPanel.classList.remove('open');
     window.electronAPI.setIgnoreMouse(true);
+  }
+
+  setLyricStyle(style) {
+    // Remove all lyric style classes
+    document.body.classList.remove(
+      'lyric-style-default',
+      'lyric-style-cyberpunk',
+      'lyric-style-ethereal',
+      'lyric-style-retro'
+    );
+    // Add new style class
+    document.body.classList.add(`lyric-style-${style}`);
+    this.currentLyricStyle = style;
   }
 
   async enableVisualization() {
