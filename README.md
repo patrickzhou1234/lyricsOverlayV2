@@ -24,39 +24,40 @@ A beautiful, modern lyrics overlay for Spotify built with Electron.js and Python
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    cd lyricsOverlay2
    ```
-
 2. **Install Node.js dependencies**
+
    ```bash
    npm install
    ```
-
 3. **Install Python dependencies**
+
    ```bash
    cd backend
    pip install -r requirements.txt
    cd ..
    ```
-
 4. **Set up your credentials**
-   - Copy `.env.example` to `.env` in the `backend` folder
+
+   - Copy `.env.example` to `.env` in the root directory
    - Add your Spotify API credentials (get them from [Spotify Developer Dashboard](https://developer.spotify.com/dashboard))
    - Optionally add your Genius API token for unsynced lyrics fallback
 
    ```bash
-   cp .env.example backend/.env
+   cp .env.example .env
    ```
-
 5. **Run the app**
+
    ```bash
    npm start
    ```
 
 ## 🔧 Configuration
 
-Create a `.env` file in the `backend` folder with:
+Create a `.env` file in the root folder with:
 
 ```
 SPOTIFY_CLIENT_ID=your_spotify_client_id
@@ -69,16 +70,17 @@ GENIUS_ACCESS_TOKEN=your_genius_token (optional)
 1. Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
 2. Create a new app
 3. Add `http://127.0.0.1:8888/callback` as a Redirect URI
-4. Copy your Client ID and Client Secret
+4. Add ur own account to the user management
+5. Copy your Client ID and Client Secret
 
 ## 🎨 Keyboard Shortcuts
 
-| Key | Action |
-|-----|--------|
-| Arrow Up | Increase scroll speed (unsynced) |
-| Arrow Down | Decrease scroll speed (unsynced) |
-| Arrow Left | Offset lyrics backward |
-| Arrow Right | Offset lyrics forward |
+| Key         | Action                           |
+| ----------- | -------------------------------- |
+| Arrow Up    | Increase scroll speed (unsynced) |
+| Arrow Down  | Decrease scroll speed (unsynced) |
+| Arrow Left  | Offset lyrics backward           |
+| Arrow Right | Offset lyrics forward            |
 
 ## 📁 Project Structure
 
@@ -89,6 +91,7 @@ lyricsOverlay2/
 ├── index.html       # Main UI
 ├── styles.css       # Premium dark theme
 ├── renderer.js      # Frontend logic
+├── .env.example     # Environment template
 ├── package.json
 └── backend/
     ├── server.py        # Python backend
@@ -99,9 +102,15 @@ lyricsOverlay2/
 
 ## 🛠 Tech Stack
 
-- **Frontend**: Electron.js, HTML, CSS, JavaScript
+- **Frontend**: Electron.js, HTML, CSS, JavaScript (Visualizer built with `audioMotion-analyzer`)
 - **Backend**: Python, Spotipy, LyricsGenius
 - **APIs**: Spotify Web API, LRCLIB (for synced lyrics), Genius (for unsynced lyrics)
+
+## 🤝 Credits
+
+- **[aaditisawesome](https://github.com/aaditisawesome)** - Developed the initial [lyrics connectors and python scripts](https://github.com/aaditisawesome/lyricsoverlay).
+- **[mowke](https://github.com/mowke)** - Collaborated on the first part of the Electron application in school.
+- I just improved the window structure and added the audio visualizer.
 
 ## 📝 License
 
